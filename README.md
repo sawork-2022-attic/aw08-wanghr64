@@ -1,20 +1,29 @@
-# aw08
+# Order Service
 
-Run the project with `mvn spring-boot:run` and send request to `http://localhost:8080/check`. You should see an reponses in json format like the following.
+Order Service 实现了以下 API：
+- `/order`：类型为 `POST`，作用为确认购物车的商品信息并提交该订单。
 
-```json
-{
-    "icon_url": "https://assets.chucknorris.host/img/avatar/chuck-norris.png",
-    "id": "kswv7NIaTCaIIErlBzODaA",
-    "url": "https://api.chucknorris.io/jokes/kswv7NIaTCaIIErlBzODaA",
-    "value": "Chuck Norris's shadow weighs 250 pounds and can kick your ass ."
-}
-```
+Order Serive 通过 HTTP 请求，从 Cart Service 中获取购物车的信息
 
-Try to understand the provided code which demonstrates spring integration between a spring boot application with an externel http service (https://api.chucknorris.io/jokes/random).
+# Delivery Service
 
-Please implement delivery as an standalone service (just like the random joke service). Refer the sample code to integrate your Micropos system with delivery service so that user can check delivery status on Miropos which actually forwards user request to delivery service on demand.
+Order Service 实现了以下 API：
+- `/delivery`：类型为 `GET`，作用为查看已经提交的订单信息。
 
-![](Micropos.svg)
+Delivery Serive 通过 RabbitMQ 的消息机制，获取订单的信息并进行存储。
 
-Consider the advantage by doing so and write it down in your readme file.
+# 消息机制
+
+使用名为 `summitOrder-out-0` 的 exchange。
+
+由于用户提交订单是异步操作，因此示例代码中默认的每秒钟发送一次消息的机制并不适用于 WebPOS。因此在 `pos-order` 中使用了 `streamBridge`，以异步的发送消息。
+
+# 实验结果
+
+连续发送了 4 个相同的订单，RabbitMQ 界面的统计图如下：
+
+![](./pics/out.png)
+
+Postman 进行 `/delivery` 的 `GET` 请求，结果如下：
+
+![](./pics/in.png)
