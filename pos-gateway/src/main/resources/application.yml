@@ -20,7 +20,7 @@ spring:
             - Path=/order/**
           filters:
         - id: pos-delivery
-          uri: lb://pos-delivery
+          uri: lb://pos-integration
           predicates:
             - Path=/delivery/**
           filters:
